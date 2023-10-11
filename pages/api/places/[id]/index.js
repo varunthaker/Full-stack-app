@@ -10,26 +10,20 @@ export default async function handler(request, response) {
 
   if (request.method === "GET") {
     await dbConnect();
-    const place = await Place.findById(id);
-    // const comment = place?.comments;
-    // const allCommentIds = comment?.map((comment) => comment.$oid) || [];
-    // const comments = await Place.filter((comment) =>
-    //   allCommentIds.includes(comment._id.$oid)
-    // );
+    const place = await Place.findById(id).populate("comments");
     if (!place) {
       return response.status(404).json({ status: "Not found" });
     }
 
-    response.status(200).json(place);
+    return response.status(200).json(place);
   }
 
   if (request.method === "PATCH") {
     await Place.findByIdAndUpdate(id, {
       $set: request.body,
     });
+    return response.status(200).json({ status: `Place ${id} updated.` });
   }
-
-  response.status(200).json({ status: `Place ${id} updated.` });
 
   if (request.method === "DELETE") {
     // await dbConnect()
